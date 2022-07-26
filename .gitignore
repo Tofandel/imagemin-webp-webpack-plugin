@@ -1,3 +1,8 @@
 node_modules/
 test-project/node_modules/
 test-project/dist/
+test-project/plugin.js
+
+test-project-webpack5/node_modules/
+test-project-webpack5/dist/
+test-project-webpack5/plugin.js

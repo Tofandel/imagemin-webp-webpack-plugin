@@ -1,31 +1,50 @@
 const imagemin = require('imagemin');
 const webp = require('imagemin-webp');
+const gif2webp = require('imagemin-gif2webp');
 
 const GREEN = '\x1b[32m%s\x1b[0m';
 const RED = '\x1b[31m%s\x1b[0m';
 
 class ImageminWebpWebpackPlugin {
     constructor({
-        config = [
-            {
-                test: /\.(jpe?g|png)/,
-                options: {
-                    quality: 75
-                }
-            }
-        ],
-        overrideExtension = true,
-        detailedLogs = false,
-        strict = true,
-        silent = false
-    } = {}) {
+                    config = [
+                        {
+                            test: /\.(jpe?g|png)/,
+                            options: {
+                                quality: 75
+                            }
+                        }
+                    ],
+                    overrideExtension = true,
+                    detailedLogs = false,
+                    strict = true,
+                    silent = false
+                } = {}) {
         this.config = config;
         this.detailedLogs = detailedLogs;
         this.strict = strict;
         this.overrideExtension = overrideExtension;
         this.silent = silent;
     }
-    
+
+    apply(compiler) {
+        if (compiler.hooks && compiler.hooks.thisCompilation) {
+            // webpack 5.x
+            compiler.hooks.thisCompilation.tap('ImageminWebpWebpackPlugin', compilation => {
+                compilation.hooks.processAssets.tapAsync({
+                    name: 'ImageminWebpWebpackPlugin',
+                    stage: compiler.PROCESS_ASSETS_STAGE_OPTIMIZE
+                }, (assets, cb) => this.onEmit(compilation, cb));
+            });
+        } else if (compiler.hooks) {
+            // webpack 4.x
+            compiler.hooks.emit.tapAsync('ImageminWebpWebpackPlugin', this.onEmit.bind(this));
+        } else {
+            // older versions
+            compiler.plugin('emit', this.onEmit.bind(this));
+        }
+    }
+
     onEmit(compilation, cb) {
         let assetNames = Object.keys(compilation.assets);
         let nrOfImagesFailed = 0;
@@ -33,10 +52,10 @@ class ImageminWebpWebpackPlugin {
         if (this.silent && this.detailedLogs) {
             compilation.warnings.push(new Error(`ImageminWebpWebpackPlugin: both the 'silent' and 'detailedLogs' options are true. Overriding 'detailedLogs' and disabling all console output.`));
         }
-        
+
         if (assetNames.length === 0) {
-          cb();
-          return;
+            cb();
+            return;
         }
 
         Promise.all(
@@ -56,7 +75,10 @@ class ImageminWebpWebpackPlugin {
 
                         return imagemin
                             .buffer(currentAsset.source(), {
-                                plugins: [webp(this.config[i].options)]
+                                plugins: [
+                                    webp(this.config[i].options),
+                                    gif2webp(this.config[i].quality),
+                                ]
                             })
                             .then(buffer => {
                                 let savedKB = (currentAsset.size() - buffer.length) / 1000;
@@ -64,18 +86,8 @@ class ImageminWebpWebpackPlugin {
                                 if (this.detailedLogs && !this.silent) {
                                     console.log(GREEN, `${savedKB.toFixed(1)} KB saved from '${name}'`);
                                 }
-                                if (compilation.emitAsset) {
-                                    compilation.emitAsset(outputName, {
-                                        source: () => buffer,
-                                        size: () => buffer.length
-                                    })
-                                } else {
-                                    compilation.assets[outputName] = {
-                                        source: () => buffer,
-                                        size: () => buffer.length
-                                    };
-                                }
 
+                                this.emitAsset(outputName, buffer, compilation);
                                 return savedKB;
                             })
                             .catch(err => {
@@ -113,22 +125,20 @@ class ImageminWebpWebpackPlugin {
             cb();
         });
     }
-    
-    apply(compiler) {
-        if (compiler.hooks && compiler.hooks.thisCompilation) {
-          // webpack 5.x
-          compiler.hooks.thisCompilation.tap('ImageminWebpWebpackPlugin', compilation => {
-            compilation.hooks.processAssets.tapAsync({
-              name: 'ImageminWebpWebpackPlugin',
-              stage: compiler.PROCESS_ASSETS_STAGE_OPTIMIZE
-            }, (assets, cb) => this.onEmit(compilation, cb));
-          });
-        } else if (compiler.hooks) {
-            // webpack 4.x
-            compiler.hooks.emit.tapAsync('ImageminWebpWebpackPlugin', this.onEmit.bind(this));
+
+    emitAsset(name, buffer, compilation) {
+        if (compilation.emitAsset) {
+            // webpack 5.x
+            compilation.emitAsset(name, {
+                source: () => buffer,
+                size: () => buffer.length
+            })
         } else {
-            // older versions
-            compiler.plugin('emit', this.onEmit.bind(this));
+            // webpack 4.x & 3.x
+            compilation.assets[outputName] = {
+                source: () => buffer,
+                size: () => buffer.length
+            };
         }
     }
 }

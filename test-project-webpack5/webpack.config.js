@@ -1,7 +1,7 @@
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpackMerge = require('webpack-merge');
+const { merge: webpackMerge } = require('webpack-merge');
 const modeConfig = env => require(`./build-utils/webpack.${env}`)(env);
 
 
@@ -19,7 +19,7 @@ const modeConfig = env => require(`./build-utils/webpack.${env}`)(env);
 fs.copyFileSync('../plugin.js', 'plugin.js');
 const ImageminWebpWebpackPlugin = require('./plugin');
 
-module.exports = ({ mode }) =>
+module.exports = (env, { mode }) =>
     webpackMerge(
         {
             mode,
@@ -29,15 +29,6 @@ module.exports = ({ mode }) =>
                     {
                         test: /\.js$/,
                         use: 'babel-loader'
-                    },
-                    {
-                        test: /\.(jpeg|jpg|png|gif|svg)$/i,
-                        loader: 'file-loader',
-
-                        options: {
-                            name: '[name].[ext]?[hash]',
-                            outputPath: 'assets/'
-                        }
                     }
                 ]
             },

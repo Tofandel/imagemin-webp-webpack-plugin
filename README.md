@@ -1,19 +1,19 @@
 # imagemin-webp-webpack-plugin
 
  
-**Webpack** plugin which converts images to the [WebP](https://developers.google.com/speed/webp/) format while also keeping the original files. Built for **webpack 4** but should work in previous versions as well.
+**Webpack** plugin which converts images to the [WebP](https://developers.google.com/speed/webp/) format while also keeping the original files. Compatible with **webpack 5**, **webpack 4** and previous versions as well.
 
 
-It uses [imagemin](https://www.npmjs.com/package/imagemin) and [imagemin-webp](https://www.npmjs.com/package/imagemin-webp) under the hood.
+It uses [imagemin](https://www.npmjs.com/package/imagemin), [imagemin-webp](https://www.npmjs.com/package/imagemin-webp) and [imagemin-gif2webp](https://www.npmjs.com/package/imagemin-gif2webp) under the hood.
 
  
 ## Motivation
 
-Although WebP images are not currently supported in all browsers, they are at least 25% smaller than PNG's or JPEG's. So, certain users can get a much better experience.
+Although WebP images are not currently supported in all browsers, they are at least 25% smaller than PNG's or JPEG's. So, certain users can get a much better experience. WebP also supports Gif-like functionality so this plugin also works for GIF images.
 
 Check the support tables on [Can I use](https://caniuse.com/#feat=webp)
 
- 
+
 ## Installation
 
   
@@ -80,7 +80,7 @@ Type ```Array<Object: {test, options} >```
 
 The main config of the plugin which controls how different file types are converted. Each item in the array is an object with 2 properties:
 
-* **test** - a RegExp selecting just certain images
+* **test** - a RegExp selecting just certain images. Supported image formats are **JPG**, **PNG** and **GIF**.
 * **options** -the converting options for the images that pass the above RegExp
 
 ⚠ The **options** object is actually the same one from the [imagemin-webp](https://www.npmjs.com/package/imagemin-webp) plugin so check their documentation for the available settings.
@@ -122,12 +122,28 @@ By default the webpack build will fail if any of the images that match your RegE
 
 This option tells the plugin to not crash the build and keep going :)
 
+## Compatibility & known issues
+
+Recently we updated this plugin to make it compatible with **webpack 5**. Originally it was built for **webpack 4** and earlier versions, so I expect it would be compatible no matter the project :)
+
+However, there is a known issue with `css-loader@latest` where importing `.webp` images will fail because they don't exist prior the build time. For example this CSS code:
+
+```
+body {
+  backgrund-image: url('/assets/cover.webp')
+}
+```
+
+will fail since initially only `cover.jpg` exists, and `cover.webp` is created dynamically by this Plugin. 
+
+Please read some more about this [here](https://github.com/iampava/imagemin-webp-webpack-plugin/issues/56) and upvote [the issue](https://github.com/iampava/imagemin-webp-webpack-plugin/issues/56) if you want me to implement a fix :D
+
 
 ## Other mentions
 
 * it doesn't re-convert images while developing
 * if you change the actual image but keep the name, somehow `webpack` is smart enough to detect this and it will re-convert just that image
-* there's a [test-project](https://github.com/iampava/imagemin-webp-webpack-plugin/tree/master/test-project) included in this repo for easy testing and tweaking of the plugin (in case you find bugs)
+* there are  2 projects used to test if/how this plugin works in **webpack 5** and **webpack 4**. The projects are: [test-project](https://github.com/iampava/imagemin-webp-webpack-plugin/tree/master/test-project) and [test-project-webpack5](https://github.com/iampava/imagemin-webp-webpack-plugin/tree/master/test-project-webpack5).
 
 <hr/>
 
