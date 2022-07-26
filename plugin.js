@@ -30,7 +30,7 @@ class ImageminWebpWebpackPlugin {
     }
 
     apply(compiler) {
-        if (compiler.hooks && compiler.hooks.thisCompilation) {
+        if (compiler.webpack) {
             // webpack 5.x
             compiler.hooks.thisCompilation.tap('ImageminWebpWebpackPlugin', compilation => {
                 compilation.hooks.processAssets.tapAsync({

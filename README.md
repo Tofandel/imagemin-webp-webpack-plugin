@@ -1,4 +1,4 @@
-# imagemin-webp-webpack-plugin
+# imagemin-webp-webpack-plugin-next
 
  
 **Webpack** plugin which converts images to the [WebP](https://developers.google.com/speed/webp/) format while also keeping the original files. Compatible with **webpack 5**, **webpack 4** and previous versions as well.
@@ -19,7 +19,7 @@ Check the support tables on [Can I use](https://caniuse.com/#feat=webp)
   
 
 ```bash
-$ npm install imagemin-webp-webpack-plugin --save-dev
+$ npm install imagemin-webp-webpack-plugin-next --save-dev
 ```
 
   
@@ -33,7 +33,7 @@ In order to use this plugin, add it to your **webpack config**.
   
 
 ```js
-const ImageminWebpWebpackPlugin= require("imagemin-webp-webpack-plugin");
+const ImageminWebpWebpackPlugin= require("imagemin-webp-webpack-plugin-next");
 
 module.exports = {
     plugins: [new ImageminWebpWebpackPlugin()]
@@ -136,14 +136,14 @@ body {
 
 will fail since initially only `cover.jpg` exists, and `cover.webp` is created dynamically by this Plugin. 
 
-Please read some more about this [here](https://github.com/iampava/imagemin-webp-webpack-plugin/issues/56) and upvote [the issue](https://github.com/iampava/imagemin-webp-webpack-plugin/issues/56) if you want me to implement a fix :D
+Please read some more about this [here](https://github.com/iampava/imagemin-webp-webpack-plugin-next/issues/56) and upvote [the issue](https://github.com/iampava/imagemin-webp-webpack-plugin-next/issues/56) if you want me to implement a fix :D
 
 
 ## Other mentions
 
 * it doesn't re-convert images while developing
 * if you change the actual image but keep the name, somehow `webpack` is smart enough to detect this and it will re-convert just that image
-* there are  2 projects used to test if/how this plugin works in **webpack 5** and **webpack 4**. The projects are: [test-project](https://github.com/iampava/imagemin-webp-webpack-plugin/tree/master/test-project) and [test-project-webpack5](https://github.com/iampava/imagemin-webp-webpack-plugin/tree/master/test-project-webpack5).
+* there are  2 projects used to test if/how this plugin works in **webpack 5** and **webpack 4**. The projects are: [test-project](https://github.com/iampava/imagemin-webp-webpack-plugin-next/tree/master/test-project) and [test-project-webpack5](https://github.com/iampava/imagemin-webp-webpack-plugin-next/tree/master/test-project-webpack5).
 
 <hr/>
 
