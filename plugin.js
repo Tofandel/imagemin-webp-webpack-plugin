@@ -6,20 +6,22 @@ const GREEN = '\x1b[32m%s\x1b[0m';
 const RED = '\x1b[31m%s\x1b[0m';
 
 class ImageminWebpWebpackPlugin {
-    constructor({
-                    config = [
-                        {
-                            test: /\.(jpe?g|png)/,
-                            options: {
-                                quality: 75
-                            }
-                        }
-                    ],
-                    overrideExtension = true,
-                    detailedLogs = false,
-                    strict = true,
-                    silent = false
-                } = {}) {
+    constructor(
+        {
+            config = [
+                {
+                    test: /\.(jpe?g|png)/,
+                    options: {
+                        quality: 75
+                    }
+                }
+            ],
+            overrideExtension = true,
+            detailedLogs = false,
+            strict = true,
+            silent = false
+        } = {}
+    ) {
         this.config = config;
         this.detailedLogs = detailedLogs;
         this.strict = strict;
